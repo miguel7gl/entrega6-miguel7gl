@@ -1,47 +1,24 @@
 # Practica 6: Testing de una aplicacion de Spring Boot
 
-## Objetivo de la práctica
+En esta práctica se va a realizar por un lado una comprobación de las clases adjuntadas en el enunciado de la práctica (Telefono.java, DNI.java y ProcessController.java)
 
-Dado un desarrollo de Spring Boot, es necesario anhadir tests a las siguientes clases:
+## Puebas JUnit
 
-- DNI & Telefono (Unit Tests) (Cada clase tiene un metodo y varias casuisticas para probar)
-- ProcessController (E2E Tests) (2 endpoints)
+En esta parte se han comprobado los archivos Telefono.java y DNI.java mediante el uso de tests:
 
-```
-mvn clean spring-boot:run
+- DNITest.java: se comprueban un DNI falso y otro verdadero
+- TelefonoTest.java: se comprueban 3 teléfonos: uno español, uno internacional y uno falso
 
-curl -v -X POST http://localhost:8080/api/v1/process-step1-legacy \
-   -H "Content-Type: application/x-www-form-urlencoded" \
-   -d "fullName=Juan%20Antonio%20Brena%20Moral&dni=12345678Z&telefono=%2B34%20600903434"
 
-curl -v -X POST http://localhost:8080/api/v1/process-step1 \
-   -H 'Content-Type: application/json' \
-   -d '{"fullName":"Juan Antonio Brena Moral","dni":"12345678Z", "telefono":"+34 600903434"}'
-```
+## Pruebas End to End
 
-## Entrega
+En esta parte se va a comprobar el correcto funcionamiento de la clase ProcessController.java.
 
-Sube la practica solucionada a un repositorio de Github.
-y crea un documento en formato Markdown, explicando las casuisticas que se van a probar.
+Para ello, se ha creado una clase test en la que se realizan varias comprobaciones:
 
-## Criterios de evaluación
+- Usuario correcto
+- Usuario con nombre incorrecto
+- Usuario con DNI incorrecto
+- Usuario con telefono incorrecto
 
-- 0 -> 5
-    - Entregar en fecha
-    - Subir ejemplo a Github
-    - Ejemplo funcional
-    - Aparentemente funciona
-    - Con README
-- 5 -> 9
-    - La práctica entregada hace lo que se pide
-- 9 -> 10
-    - El alumno explora la materia y añade elementos adicionales
-
-**Nota:** Si el alumno no entrega a tiempo la practica, la calificacion maxima
-sera de un 5 si el retraso es de una semana y no presentado si el retraso es major.
-
-## References
-
-- https://docs.spring.io/spring-boot/docs/1.5.16.RELEASE/reference/html/boot-features-testing.html
-- https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/web/client/TestRestTemplate.html
-- https://www.urlencoder.org/
+Tras comprobar que se realizan correctamente cada una de las funcionalidades se ha concluido que están correctamente diseñadas.
