@@ -33,14 +33,13 @@ public class ProcessControllerTest {
         // Given
         String address = "http://localhost:" + port + "/api/v1/process-step1";
 
-        String fullNameRaw = "Miguel Gonzalez";
-        String dniRaw = "06618034Z";
-        String telefonoRaw = "645342766";
-
-        ProcessController.DataRequest data1 = new ProcessController.DataRequest(fullNameRaw, dniRaw, telefonoRaw);
+        //Datos
+        ProcessController.DataRequest datos = new ProcessController.DataRequest("Miguel Gonzalez", "06618034Z", "645342766");
+        
+        //Request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<ProcessController.DataRequest> request = new HttpEntity<>(data1, headers);
+        HttpEntity<ProcessController.DataRequest> request = new HttpEntity<>(datos, headers);
 
         // When
         ResponseEntity<String> result = this.restTemplate.postForEntity(address, request, String.class);
@@ -49,6 +48,36 @@ public class ProcessControllerTest {
         then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
+
+    @Test
+    public void given_app_when_login_using_bad_credentials_then_KO() throws Exception {
+        
+        //Given
+        String address = "http://localhost:" + port + "/api/v1/process-step1";
+
+        //Datos con fallos
+        ProcessController.DataRequest datosDNIMalo = new ProcessController.DataRequest("Miguel Gonzalez", "","645342766");
+        ProcessController.DataRequest datosTelefonoMalo = new ProcessController.DataRequest("Miguel Gonzalez", "06618034Z", "");
+
+        // Request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<ProcessController.DataRequest> requestErrorDNI = new HttpEntity<>(datosDNIMalo, headers);
+        HttpEntity<ProcessController.DataRequest> requestErrorTelf = new HttpEntity<>(datosTelefonoMalo, headers);
+
+        // Response
+        ResponseEntity<String> resultErrorDNI = this.restTemplate.postForEntity(address, requestErrorDNI, String.class);
+        ResponseEntity<String> resultErrorTelf = this.restTemplate.postForEntity(address, requestErrorTelf,
+                String.class);
+
+        //Comprobacion de codigos
+        then(resultErrorDNI.getBody()).isEqualTo("{\"result\":\"KO\"}");
+        then(resultErrorTelf.getBody()).isEqualTo("{\"result\":\"KO\"}");
+
+        then(resultErrorDNI.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        then(resultErrorTelf.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }   
 
     @Test
     public void given_app_when_login_using_right_credentials_then_ok_legacy() {
@@ -61,6 +90,24 @@ public class ProcessControllerTest {
         data1.add("fullName", "Miguel Gonzalez");
         data1.add("dni", "06618034Z");
         data1.add("telefono", "645342766");
+
+        //Construimos el request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        //Request test 1
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(data1, headers);
+        ResponseEntity<String> result = this.restTemplate.postForEntity(address, request, String.class);
+        
+        //Comprobamos que es correcto
+        then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        
+    }
+    @Test
+    public void given_app_when_login_using_bad_credentials_then_KO_legacy() {
+        
+        //Given
+        String address = "http://localhost:" + port + "/api/v1/process-step1-legacy";
 
         //Test nombre inválido
         MultiValueMap<String, String> data2 = new LinkedMultiValueMap<>();
@@ -80,14 +127,10 @@ public class ProcessControllerTest {
         data3.add("dni", "06618034Z");
         data3.add("telefono", "645342222");
 
-        //Construimos el request
+        // Request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        //Request test 1
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(data1, headers);
-        ResponseEntity<String> result = this.restTemplate.postForEntity(address, request, String.class);
-        
         //Request test 2
         HttpEntity<MultiValueMap<String, String>> request_2 = new HttpEntity<>(data2, headers);
         ResponseEntity<String> result_2 = this.restTemplate.postForEntity(address, request_2, String.class);
@@ -101,10 +144,8 @@ public class ProcessControllerTest {
         ResponseEntity<String> result_4 = this.restTemplate.postForEntity(address, request_4, String.class);
 
         //Comprobamos que coinciden los codigos de error con los esperados
-        then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         then(result_2.getStatusCode()).isEqualTo(HttpStatus.OK);
         then(result_3.getStatusCode()).isEqualTo(HttpStatus.OK);
         then(result_4.getStatusCode()).isEqualTo(HttpStatus.OK);
-
     }
 }
